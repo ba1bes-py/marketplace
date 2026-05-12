@@ -6,7 +6,7 @@ import os
 app = Flask(__name__)
 app.secret_key = "my_secret_key_123"
 
-database_url = os.getenv("DATABASE_URL")
+database_url = os.getenv("postgresql://marketplace_db_yiag_user:4wjBW9TO8Q0nWsatSFcxgx0XvTsuGbVk@dpg-d81dgrlckfvc738b6l5g-a/marketplace_db_yiag")
 
 if database_url and database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
@@ -218,54 +218,6 @@ def cart():
         cart_items=cart_items,
         total_price=total_price
     )
-
-def seed_database():
-    if Product.query.first():
-        return
-
-    cement = Product(
-        name="Цемент М500",
-        price=420,
-        description="Высокопрочный цемент М500 для строительных и ремонтных работ.",
-        category="Стройматериалы"
-    )
-    cement.images = [
-        ProductImage(image_url="/static/images/cem1.webp"),
-        ProductImage(image_url="/static/images/cem2.webp"),
-        ProductImage(image_url="/static/images/cem3.webp")
-    ]
-
-    screwdriver = Product(
-        name="Шуруповерт",
-        price=5600,
-        description="Аккумуляторный шуруповерт для дома, ремонта и строительных работ.",
-        category="Инструменты"
-    )
-    screwdriver.images = [
-        ProductImage(image_url="/static/images/sh1.png"),
-        ProductImage(image_url="/static/images/sh2.png"),
-        ProductImage(image_url="/static/images/sh3.webp")
-    ]
-
-    perforator = Product(
-        name="Перфоратор",
-        price=8900,
-        description="Мощный перфоратор для сверления бетона, кирпича и камня.",
-        category="Инструменты"
-    )
-    perforator.images = [
-        ProductImage(image_url="/static/images/p1.webp"),
-        ProductImage(image_url="/static/images/p2.webp"),
-        ProductImage(image_url="/static/images/p3.webp")
-    ]
-
-    db.session.add_all([cement, screwdriver, perforator])
-    db.session.commit()
-
-
-with app.app_context():
-    db.create_all()
-    seed_database()
 
 if __name__ == "__main__":
     with app.app_context():
