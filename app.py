@@ -6,12 +6,11 @@ import os
 app = Flask(__name__)
 app.secret_key = "my_secret_key_123"
 
-database_url = os.getenv("postgresql://marketplace_db_yiag_user:4wjBW9TO8Q0nWsatSFcxgx0XvTsuGbVk@dpg-d81dgrlckfvc738b6l5g-a/marketplace_db_yiag")
-
+database_url = os.getenv("DATABASE_URL")
 if database_url and database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = database_url or "postgresql://postgres:postgres@localhost:5432/marketplace?connect_timeout=3"
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
