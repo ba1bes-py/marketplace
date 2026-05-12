@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Личный кабинет | СтройМаркет{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="account-card">
+        <h1>Личный кабинет</h1>
+
+        <p class="text-muted">
+            Добро пожаловать в ваш аккаунт.
+        </p>
+
+        <div class="account-info">
+            <p><strong>Почта:</strong> {{ session["user_email"] }}</p>
+        </div>
+
+        <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">
+            Выйти
+        </a>
+    </div>
+</div>
+{% endblock %}

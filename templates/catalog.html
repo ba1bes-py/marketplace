@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Каталог | СтройМаркет{% endblock %}
+
+{% block content %}
+<section class="catalog-header">
+    <div class="container">
+        <h1>Каталог товаров</h1>
+        <p>Выберите стройматериалы, инструменты и товары для ремонта.</p>
+    </div>
+</section>
+
+<section class="catalog-section">
+    <div class="container">
+
+        <div class="mb-4 d-flex flex-wrap gap-2">
+            <a href="{{ url_for('catalog') }}"
+               class="btn {% if not selected_category %}btn-success{% else %}btn-outline-success{% endif %}">
+                Все товары
+            </a>
+
+            {% for category in categories %}
+                <a href="{{ url_for('catalog', category=category) }}"
+                   class="btn {% if selected_category == category %}btn-success{% else %}btn-outline-success{% endif %}">
+                    {{ category }}
+                </a>
+            {% endfor %}
+        </div>
+
+        {% if products %}
+            <div class="row g-4">
+                {% for product in products %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="catalog-card clickable-card"
+     data-url="{{ url_for('product_page', product_id=product.id) }}"
+     onclick="window.location.href=this.dataset.url">
+
+                            <div class="catalog-image-wrap">
+                            {% if product.images and product.images[0] %}
+                                <img src="{{ product.images[0].image_url }}" alt="{{ product.name }}" class="catalog-image">
+                            {% else %}
+                                <div class="catalog-image-placeholder">Фото скоро появится</div>
+                            {% endif %}
+                        </div>
+
+                            <div class="catalog-card-body">
+                                <span class="catalog-category">{{ product.category }}</span>
+                                <h3>{{ product.name }}</h3>
+                                <p class="catalog-description">
+    {{ product.description.split('\n')[1] if product.description.split('\n')|length > 1 else product.description }}
+</p>
+                            </div>
+
+                            <div class="catalog-bottom">
+                                <div class="catalog-price">{{ product.price }} ₽</div>
+
+<form action="{{ url_for('add_to_cart', product_id=product.id) }}"
+      method="POST"
+      class="quantity-form"
+      onclick="event.stopPropagation()">
+    <div class="quantity-control">
+        <button type="button" class="quantity-btn minus">−</button>
+        <input type="number" name="quantity" value="1" min="1" class="quantity-input">
+        <button type="button" class="quantity-btn plus">+</button>
+    </div>
+
+    <button type="submit" class="btn btn-success">
+        В корзину
+    </button>
+</form>
+                            </div>
+
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="catalog-card p-4">
+                <h3>Товары не найдены</h3>
+                <p class="catalog-description">В этой категории пока нет товаров.</p>
+                <a href="{{ url_for('catalog') }}" class="btn btn-success custom-btn">Показать все товары</a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<script>
+document.querySelectorAll(".quantity-form").forEach(function(form) {
+    const minusBtn = form.querySelector(".minus");
+    const plusBtn = form.querySelector(".plus");
+    const input = form.querySelector(".quantity-input");
+
+    minusBtn.addEventListener("click", function() {
+        let value = parseInt(input.value) || 1;
+        if (value > 1) {
+            input.value = value - 1;
+        }
+    });
+
+    plusBtn.addEventListener("click", function() {
+        let value = parseInt(input.value) || 1;
+        input.value = value + 1;
+    });
+});
+</script>
+{% endblock %}

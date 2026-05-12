@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row g-4">
+
+        <div class="col-md-6">
+            <div class="product-page-image-wrap">
+
+                {% if product.images and product.images[0] %}
+                    <img id="mainProductImage"
+                         src="{{ product.images[0].image_url }}"
+                         alt="{{ product.name }}">
+                {% else %}
+                    <div class="product-main-placeholder">Фото скоро появится</div>
+                {% endif %}
+
+                {% if product.images %}
+    <div class="product-thumbs-wrapper">
+        <button type="button" class="thumb-scroll-btn" id="thumbPrev">‹</button>
+
+        <div class="product-thumbs-row" id="productThumbsRow">
+            {% for image in product.images %}
+                <img src="{{ image.image_url }}"
+                     alt="{{ product.name }}"
+                     class="product-thumb {% if loop.first %}active-thumb{% endif %}"
+                     onclick="changeMainImage(this, '{{ image.image_url }}')">
+            {% endfor %}
+        </div>
+
+        <button type="button" class="thumb-scroll-btn" id="thumbNext">›</button>
+    </div>
+{% endif %}
+
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h1 class="product-title">{{ product.name }}</h1>
+
+            <p class="text-muted product-category">
+                Категория: {{ product.category }}
+            </p>
+
+            <div class="product-description">
+    {{ product.description | replace('\n', '<br>') | safe }}
+</div>
+            <h3 class="product-price">{{ product.price }} ₽</h3>
+
+            <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
+                <button type="submit" class="btn btn-success">
+                    Добавить в корзину
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script>
+let currentImageIndex = 0;
+
+function setActiveImage(index) {
+    const mainImage = document.getElementById("mainProductImage");
+    const thumbs = document.querySelectorAll(".product-thumb");
+
+    if (!mainImage || thumbs.length === 0) {
+        return;
+    }
+
+    if (index < 0) {
+        index = thumbs.length - 1;
+    }
+
+    if (index >= thumbs.length) {
+        index = 0;
+    }
+
+    currentImageIndex = index;
+
+    const activeThumb = thumbs[currentImageIndex];
+    mainImage.src = activeThumb.src;
+
+    thumbs.forEach(function(thumb) {
+        thumb.classList.remove("active-thumb");
+    });
+
+    activeThumb.classList.add("active-thumb");
+    activeThumb.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest"
+    });
+}
+
+function changeMainImage(element, imageUrl) {
+    const thumbs = Array.from(document.querySelectorAll(".product-thumb"));
+    const index = thumbs.indexOf(element);
+
+    if (index !== -1) {
+        setActiveImage(index);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const prevBtn = document.getElementById("thumbPrev");
+    const nextBtn = document.getElementById("thumbNext");
+
+    if (prevBtn && nextBtn) {
+        prevBtn.addEventListener("click", function () {
+            setActiveImage(currentImageIndex - 1);
+        });
+
+        nextBtn.addEventListener("click", function () {
+            setActiveImage(currentImageIndex + 1);
+        });
+    }
+});
+</script>
+{% endblock %}
+
